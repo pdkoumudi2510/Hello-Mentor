@@ -3,155 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HelloMentor — AI Practice Lab</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <title>HelloMentor | Multi-Domain Practice Lab</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #f8fafc; --card: #ffffff; --brand: #2563eb; --text: #1e293b;
-            --dark-bg: #1e1e1e; --dark-text: #d4d4d4; --line: #e2e8f0;
+            --brand: #2563eb; --brand-light: #eff6ff; --text: #0f172a;
+            --bg: #f8fafc; --card: #ffffff; --line: #e2e8f0; --teacher: #7c3aed;
         }
-        body { font-family: 'DM+Sans', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
-        .container { max-width: 900px; margin: 0 auto; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; line-height: 1.6; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 40px 20px; }
         
-        /* Setup Panel */
-        .panel { background: var(--card); padding: 25px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border: 1px solid var(--line); margin-bottom: 20px; }
-        select, input { padding: 12px; border-radius: 8px; border: 1px solid var(--line); font-size: 1rem; margin-right: 10px; }
-        button { background: var(--brand); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 700; transition: opacity 0.2s; }
-        button:hover { opacity: 0.9; }
+        /* Dashboard Styling */
+        .setup-card { background: var(--card); padding: 40px; border-radius: 24px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid var(--line); }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin: 25px 0; }
+        @media (max-width: 768px) { .grid-3 { grid-template-columns: 1fr; } }
+        
+        label { font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 8px; color: #64748b; }
+        select, input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--line); font-size: 1rem; box-sizing: border-box; }
+        
+        .btn-main { background: var(--brand); color: white; border: none; padding: 16px 32px; border-radius: 12px; cursor: pointer; font-weight: 700; width: 100%; font-size: 1.1rem; transition: transform 0.2s; }
+        .btn-main:active { transform: scale(0.98); }
 
         /* Practice Area */
-        #practice-area { display: none; }
-        .q-card { background: var(--card); padding: 30px; border-radius: 16px; border: 1px solid var(--line); }
-        .split-view { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px; }
+        #practice-area { display: none; animation: fadeIn 0.5s ease; }
+        .question-box { background: var(--card); padding: 40px; border-radius: 24px; border: 1px solid var(--line); }
+        .teacher-badge { display: inline-block; background: var(--brand-light); color: var(--brand); padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 15px; }
+        
+        .split-view { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 40px; margin-top: 30px; }
         @media (max-width: 768px) { .split-view { grid-template-columns: 1fr; } }
-        
-        /* Playground */
+
+        /* Code Playground */
         #code-editor { 
-            width: 100%; height: 350px; background: var(--dark-bg); color: #9cdcfe; 
-            font-family: 'JetBrains Mono', monospace; padding: 15px; border-radius: 8px; 
-            border: none; margin-top: 20px; font-size: 14px; line-height: 1.5;
+            width: 100%; height: 300px; background: #1e1e1e; color: #9cdcfe; 
+            font-family: 'JetBrains Mono', monospace; padding: 20px; border-radius: 12px; 
+            border: none; margin-top: 20px; font-size: 15px; line-height: 1.6; resize: vertical;
         }
+
+        .hint-box { background: #faf5ff; border: 1px solid #e9d5ff; padding: 20px; border-radius: 12px; margin-top: 20px; color: #6b21a8; font-style: italic; }
+        img { width: 100%; border-radius: 16px; border: 1px solid var(--line); object-fit: cover; }
         
-        /* Image clarity */
-        .diagram img { width: 100%; border-radius: 12px; border: 1px solid var(--line); }
-        .loading { font-style: italic; color: var(--brand); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <header>
-        <h1>HelloMentor AI</h1>
-        <p>Expert-level practice for any domain.</p>
-    </header>
-
-    <div id="setup-screen" class="panel">
-        <h3>Configure Your Session</h3>
-        <select id="domain">
-            <option value="Medicaid UAT & Testing">Medicaid UAT</option>
-            <option value="Machine Learning/NLP">Machine Learning</option>
-            <option value="Full Stack Development">Full Stack Dev</option>
-            <option value="Data Science">Data Science</option>
-        </select>
+    <div id="setup-screen">
+        <h1 style="font-size: 2.5rem; margin-bottom: 10px;">HelloMentor AI</h1>
+        <p style="color: #64748b; margin-bottom: 40px;">Professional practice for students and experts across all domains.</p>
         
-        <select id="level">
-            <option value="Basic">Basic</option>
-            <option value="Intermediate">Intermediate</option>
-            <option value="Expert">Expert (Advanced)</option>
-        </select>
-
-        <input type="number" id="count" value="3" min="1" max="10" style="width: 60px;">
-        <button onclick="startSession()">Start Interview</button>
+        <div class="setup-card">
+            <div class="grid-3">
+                <div>
+                    <label>Select Domain</label>
+                    <select id="domain">
+                        <optgroup label="Technology">
+                            <option value="Machine Learning & AI">Machine Learning</option>
+                            <option value="Software Engineering">Software Engineering</option>
+                            <option value="Cybersecurity">Cybersecurity</option>
+                        </optgroup>
+                        <optgroup label="Healthcare & Gov">
+                            <option value="Medicaid Compliance & UAT">Medicaid UAT</option>
+                            <option value="Public Health Policy">Public Health Policy</option>
+                        </optgroup>
+                        <optgroup label="Professional">
+                            <option value="Project Management">Project Management</option>
+                            <option value="Corporate Law">Corporate Law</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div>
+                    <label>Expertise Level</label>
+                    <select id="level">
+                        <option value="Student (Fundamental)">Student (Fundamental)</option>
+                        <option value="Intermediate (Applied)">Intermediate (Applied)</option>
+                        <option value="Expert (System Design)">Expert (System Design)</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Questions</label>
+                    <input type="number" id="count" value="3" min="1" max="10">
+                </div>
+            </div>
+            <button class="btn-main" onclick="initSession()">Launch Teacher Mode</button>
+        </div>
     </div>
 
     <div id="practice-area">
-        <div class="q-card">
+        <div class="question-box">
+            <div id="teacher-status"></div>
             <div id="q-content"></div>
-            <div id="input-area"></div>
-            <div style="margin-top: 20px;">
-                <button id="next-btn" onclick="nextQuestion()">Next Question</button>
-                <button onclick="location.reload()" style="background:#64748b">End Session</button>
+            <div id="interaction-zone"></div>
+            
+            <div style="margin-top: 40px; display: flex; gap: 15px;">
+                <button id="next-btn" class="btn-main" style="flex: 2" onclick="nextQ()">Next Challenge</button>
+                <button class="btn-main" style="flex: 1; background: #64748b;" onclick="location.reload()">End Session</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    const API_KEY = "AIzaSyAKZSpZdGAqxIftDrZYsw02i7QmddDIORg"; 
-    let currentQuestions = [];
-    let currentIndex = 0;
-    let seenHistory = JSON.parse(localStorage.getItem('hm_history') || "[]");
+    const API_KEY = "AIzaSyAKZSpZdGAqxIftDrZYsw02i7QmddDIORg"; // Get from Google AI Studio
+    let pool = [];
+    let curIdx = 0;
+    let history = JSON.parse(localStorage.getItem('hm_infinite_history') || "[]");
 
-    async function startSession() {
-        const domain = document.getElementById('domain').value;
-        const level = document.getElementById('level').value;
-        const count = document.getElementById('count').value;
-        
+    async function initSession() {
+        const dom = document.getElementById('domain').value;
+        const lvl = document.getElementById('level').value;
+        const num = document.getElementById('count').value;
+
         document.getElementById('setup-screen').style.display = 'none';
         document.getElementById('practice-area').style.display = 'block';
-        document.getElementById('q-content').innerHTML = "<p class='loading'>AI is generating unique questions...</p>";
+        document.getElementById('q-content').innerHTML = "<h3>Teacher is preparing your challenges...</h3>";
 
-        const prompt = `Act as an expert in ${domain}. Generate ${count} unique interview questions for ${level} level. 
-        For each question, decide if it's "speech", "code", or "image" based. 
-        Return ONLY a JSON array: [{"text": "...", "type": "speech|code|image", "imageHint": "...", "keywords": ["..."]}]`;
+        const prompt = `Act as an expert Mentor in ${dom}. Generate ${num} unique interview/exam questions for a ${lvl}.
+        Requirements:
+        1. Mix question types: "speech", "code", or "image".
+        2. Ensure they are distinct from: ${history.slice(-15).join(', ')}.
+        3. Format as strict JSON array: [{"text": "...", "type": "speech|code|image", "hint": "...", "img": "diagram search term"}]`;
 
         try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+            const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
             });
-            const data = await response.json();
+            const data = await resp.json();
             const text = data.candidates[0].content.parts[0].text.replace(/```json|```/g, "");
+            pool = JSON.parse(text);
             
-            // Filter out repeated questions from history
-            let newBatch = JSON.parse(text);
-            currentQuestions = newBatch.filter(q => !seenHistory.includes(q.text));
+            // Record in history to prevent repeats next time
+            pool.forEach(q => history.push(q.text));
+            localStorage.setItem('hm_infinite_history', JSON.stringify(history.slice(-200)));
             
-            // Save to history
-            currentQuestions.forEach(q => seenHistory.push(q.text));
-            localStorage.setItem('hm_history', JSON.stringify(seenHistory.slice(-100)));
-
-            renderQuestion();
+            render();
         } catch (e) {
-            document.getElementById('q-content').innerHTML = "Error: Check your API Key.";
+            document.getElementById('q-content').innerHTML = "<h3>Error: Please check your API key and Internet.</h3>";
         }
     }
 
-    function renderQuestion() {
-        const q = currentQuestions[currentIndex];
-        const content = document.getElementById('q-content');
-        const inputArea = document.getElementById('input-area');
-        
-        content.innerHTML = `<h2>Question ${currentIndex + 1}</h2><p style="font-size:1.2rem">${q.text}</p>`;
-        inputArea.innerHTML = "";
+    function render() {
+        const q = pool[curIdx];
+        const cont = document.getElementById('q-content');
+        const zone = document.getElementById('interaction-zone');
+        const status = document.getElementById('teacher-status');
+
+        status.innerHTML = `<span class="teacher-badge">${document.getElementById('level').value} Mode</span>`;
+        cont.innerHTML = `<h2 style="margin: 0 0 20px 0;">Question ${curIdx + 1}</h2><p style="font-size: 1.25rem;">${q.text}</p>`;
+        zone.innerHTML = "";
 
         if (q.type === 'code') {
-            inputArea.innerHTML = `<textarea id="code-editor" placeholder="// Write your code here..."></textarea>`;
-            // Tab support
-            document.getElementById('code-editor').addEventListener('keydown', function(e) {
-                if (e.key === 'Tab') { e.preventDefault(); let s = this.selectionStart; this.value = this.value.substring(0, s) + "    " + this.value.substring(this.selectionEnd); this.selectionEnd = s + 4; }
-            });
+            zone.innerHTML = `<textarea id="code-editor" spellcheck="false" placeholder="// Solve the challenge here..."></textarea>`;
+            setupEditor();
         } else if (q.type === 'image') {
-            const imgUrl = `https://pollinations.ai/p/${encodeURIComponent(q.imageHint)}?width=800&height=500&model=flux`;
-            content.innerHTML = `<div class="split-view"><div>${content.innerHTML}</div><div class="diagram"><img src="${imgUrl}"></div></div>`;
-            inputArea.innerHTML = `<button style="background:#059669">Record Answer</button>`;
+            const imgUrl = `https://pollinations.ai/p/${encodeURIComponent(q.img)}?width=800&height=600&nologo=true`;
+            cont.innerHTML = `<div class="split-view"><div>${cont.innerHTML}</div><div><img src="${imgUrl}"></div></div>`;
+            zone.innerHTML = `<button class="btn-main" style="background:#059669">Record Voice Analysis</button>`;
         } else {
-            inputArea.innerHTML = `<button style="background:#059669">Record Speech</button>`;
+            zone.innerHTML = `<button class="btn-main" style="background:#059669">Record Voice Answer</button>`;
         }
+
+        zone.innerHTML += `<div class="hint-box"><strong>Teacher's Hint:</strong> ${q.hint}</div>`;
     }
 
-    function nextQuestion() {
-        currentIndex++;
-        if (currentIndex < currentQuestions.length) {
-            renderQuestion();
-        } else {
-            document.getElementById('q-content').innerHTML = "<h2>Session Complete!</h2><p>Excellent work. You've completed your expert practice.</p>";
-            document.getElementById('input-area').innerHTML = "";
+    function setupEditor() {
+        const ed = document.getElementById('code-editor');
+        ed.addEventListener('keydown', e => {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                let s = ed.selectionStart;
+                ed.value = ed.value.substring(0, s) + "    " + ed.value.substring(ed.selectionEnd);
+                ed.selectionEnd = s + 4;
+            }
+        });
+    }
+
+    function nextQ() {
+        curIdx++;
+        if (curIdx < pool.length) render();
+        else {
+            document.getElementById('q-content').innerHTML = "<h2>Session Complete!</h2><p>You have successfully finished the practice session.</p>";
+            document.getElementById('interaction-zone').innerHTML = "";
             document.getElementById('next-btn').style.display = "none";
         }
     }
 </script>
-
 </body>
 </html>
